@@ -49,7 +49,7 @@ bool UisaveFmt::Parse()
     // decrypt data
     if (!raw_data_reader_->CanRead(decrypted_length))
     {
-        std::cerr << "error: nnsufficient data to read encrypted data";
+        std::cerr << "error: insufficient data to read encrypted data";
         return false;
     }
     Decrypt(decrypted_length);
@@ -59,7 +59,7 @@ bool UisaveFmt::Parse()
     // Parse Content ID
     if (!decrypted_data_reader_->CanRead(16))
     {
-        std::cerr << "error: insufficient data to read raw data header";
+        std::cerr << "error: insufficient data to read decrypted data header";
         return false;
     }
     decrypted_data_reader_->Read(8);

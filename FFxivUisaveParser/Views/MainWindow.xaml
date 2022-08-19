@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title}" Height="350" Width="525" >
+        Title="{Binding Title}" Height="350" Width="450"
+        MinHeight="100" MinWidth="450">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
@@ -12,13 +13,13 @@
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Border Margin="5" BorderThickness="1" BorderBrush="Black">
-                <TextBlock Width="300" Margin="5" FontSize="15" Text="{Binding Text}">
+                <TextBlock Width="300" Margin="5" FontSize="15" Text="{Binding FilePath}">
                     <TextBlock.InputBindings>
                         <MouseBinding Command="{Binding SelectFileCommand}" MouseAction="LeftClick" />
                     </TextBlock.InputBindings>
                 </TextBlock>
             </Border>
-            <Button Width="75" Margin="5" Padding="5" FontSize="15" Content="解析" />
+            <Button Width="75" Margin="5" Padding="5" FontSize="15" Content="解析" Command="{Binding ParseCommand}" />
         </StackPanel>
         <ContentControl Grid.Row="1" prism:RegionManager.RegionName="ContentRegion" />
     </Grid>
