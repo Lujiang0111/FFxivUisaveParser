@@ -137,7 +137,8 @@ namespace FFxivUisaveParser.Common
         private bool ParseWaymarkPresets(byte[] decryptedData, int startIndex, int length,
             ref XmlDocument xmlDoc, ref XmlElement sectionEle)
         {
-            double x, y, z;
+            uint x_ori, y_ori, z_ori;
+            double x_real, y_real, z_real;
             byte enableFlag;
             ushort zoneId;
             uint timestamp;
@@ -153,13 +154,17 @@ namespace FFxivUisaveParser.Common
                 var presetEle = xmlDoc.CreateElement($"preset_{i}");
                 for (int j = 0; j < kWaymarkNum; ++j)
                 {
-                    x = BitConverter.ToInt32(decryptedData, startIndex + offset) / 1000.0;
-                    y = BitConverter.ToInt32(decryptedData, startIndex + offset + 4) / 1000.0;
-                    z = BitConverter.ToInt32(decryptedData, startIndex + offset + 8) / 1000.0;
+                    x_ori = BitConverter.ToUInt32(decryptedData, startIndex + offset);
+                    y_ori = BitConverter.ToUInt32(decryptedData, startIndex + offset + 4);
+                    z_ori = BitConverter.ToUInt32(decryptedData, startIndex + offset + 8);
+                    x_real = (int)x_ori / 1000.0;
+                    y_real = (int)y_ori / 1000.0;
+                    z_real = (int)z_ori / 1000.0;
                     offset += 12;
 
                     var waymarkEle = xmlDoc.CreateElement($"waymark_{kWaymarkName[j]}");
-                    waymarkEle.InnerText = $"({x}, {y}, {z})";
+                    waymarkEle.InnerText = String.Format("({0:X8}, {1:X8}, {2:X8}) == ({3}, {4}, {5})",
+                        x_ori, y_ori, z_ori, x_real, y_real, z_real);
                     presetEle.AppendChild(waymarkEle);
                 }
 

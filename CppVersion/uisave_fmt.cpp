@@ -125,7 +125,8 @@ void UisaveFmt::ParseWaymarkPresets()
     wp_section_data_reader_ = std::make_shared<ByteReader>(&wp_section_data_[0], wp_section_data_.size());
     wp_section_data_reader_->Read(16);
 
-    double x, y, z;
+    uint32_t x_ori, y_ori, z_ori;
+    double x_real, y_real, z_real;
     uint8_t enable_flag;
     uint16_t zone_id;
     uint32_t timestamp;
@@ -134,10 +135,15 @@ void UisaveFmt::ParseWaymarkPresets()
     {
         for (int i = 0; i < 8; ++i)
         {
-            x = static_cast<int>(wp_section_data_reader_->Read(4)) / 1000.0;
-            y = static_cast<int>(wp_section_data_reader_->Read(4)) / 1000.0;
-            z = static_cast<int>(wp_section_data_reader_->Read(4)) / 1000.0;
-            std::cout << "Waymark " << Waymarks[i] << ": " << x << ", " << y << ", " << z << std::endl;
+            x_ori = static_cast<uint32_t>(wp_section_data_reader_->Read(4));
+            x_real = static_cast<int>(x_ori) / 1000.0;
+            y_ori = static_cast<uint32_t>(wp_section_data_reader_->Read(4));
+            y_real = static_cast<int>(y_ori) / 1000.0;
+            z_ori = static_cast<uint32_t>(wp_section_data_reader_->Read(4));
+            z_real = static_cast<int>(z_ori) / 1000.0;
+            std::cout << "Waymark " << Waymarks[i] << ": (" <<
+                std::hex << x_ori << ", " << y_ori << ", " << z_ori << std::dec << ") => (" <<
+                x_real << ", " << y_real << ", " << z_real << ")" << std::endl;
         }
         enable_flag = static_cast<uint8_t>(wp_section_data_reader_->Read(1));
         wp_section_data_reader_->Read(1);
