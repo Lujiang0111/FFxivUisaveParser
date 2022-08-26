@@ -1,4 +1,5 @@
-﻿using Prism.Events;
+﻿using DryIoc;
+using Prism.Events;
 using System;
 using System.IO;
 using System.Xml;
@@ -14,10 +15,19 @@ namespace FFxivUisaveParser.Common
         public Uisave(IEventAggregator eventAggregator)
         {
             this.eventAggregator = eventAggregator;
-            this.eventAggregator.GetEvent<FilePathEvent>().Subscribe(arg =>
+            this.eventAggregator.GetEvent<FilePathEvent>().Subscribe(OnFilePathEvent);
+        }
+
+        private void OnFilePathEvent(string fileName)
+        {
+            if (!Parse(fileName))
             {
-                Parse(arg);
-            });
+                XmlDocument errDoc = new XmlDocument();
+                var rootEle = errDoc.CreateElement("root");
+                rootEle.InnerText = "parse error!";
+                errDoc.AppendChild(rootEle);
+                eventAggregator.GetEvent<xmlEvent>().Publish(errDoc);
+            }
         }
 
         private bool Parse(string fileName)
@@ -58,6 +68,13 @@ namespace FFxivUisaveParser.Common
             }
             byte[] decryptedData = XorDecrypt(rawData, rawDataOffset, decryptedLength, 0x31);
             int decryptedDataOffset = 0;
+
+#if SAVE_DECRYPTED_DATA
+            BinaryWriter binWriter = new BinaryWriter(File.Open("DecryptedData.DAT", FileMode.Create));
+            binWriter.Flush();
+            binWriter.Write(decryptedData);
+            binWriter.Close();
+#endif
 
             // parse content id
             if (decryptedDataOffset + 16 > decryptedData.Length)
