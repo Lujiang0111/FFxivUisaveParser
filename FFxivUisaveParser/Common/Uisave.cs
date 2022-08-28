@@ -30,6 +30,8 @@ namespace FFxivUisaveParser.Common
             }
         }
 
+        byte[] rawData;
+
         private bool Parse(string fileName)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -48,7 +50,7 @@ namespace FFxivUisaveParser.Common
                 return false;
             }
             
-            byte[] rawData = File.ReadAllBytes(fileName);
+            rawData = File.ReadAllBytes(fileName);
             int rawDataOffset = 0;
             
             // parse header
@@ -61,7 +63,7 @@ namespace FFxivUisaveParser.Common
             rawDataOffset += 16;
 
             // decrypt data
-            if (rawDataOffset + decryptedLength > rawData.Length)
+            if ((decryptedLength <= 0) || (rawDataOffset + decryptedLength > rawData.Length))
             {
                 logger.Error("insufficient data to read encrypted data");
                 return false;
@@ -106,7 +108,7 @@ namespace FFxivUisaveParser.Common
                 sectionEle.AppendChild(sectionDataLengthEle);
 
                 // parce section data
-                if (decryptedDataOffset + sectionDataLength > decryptedData.Length)
+                if ((sectionDataLength <= 0) || (decryptedDataOffset + sectionDataLength > decryptedData.Length))
                 {
                     logger.Error("insufficient data to read section data");
                     return false;
